@@ -41,22 +41,22 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 .src-st span.ok::before { background: #5ccf7a; }
 .src-st span.err::before { background: var(--lula); }
 
-.cols { display: grid; grid-template-columns: 8.4vw 1.05fr 1fr 1fr 1fr; gap: 0.7vw; min-height: 0; }
-.col.ufs { padding: 1.1vh 0.6vw; gap: 0.3vh; }
+.cols { display: grid; grid-template-columns: 8.4vw 0.95fr 1.45fr 0.9fr 0.95fr; gap: 0.7vw; min-height: 0; }
+.col.ufs { padding: 0.9vh 0.5vw; gap: 0.2vh; }
 .ufh small { display: block; font-size: 0.85rem; text-transform: none; letter-spacing: 0; color: var(--dim); font-weight: 400; margin-top: 0.2vh; }
 .ufh { margin: 0 0 0.4vh; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; line-height: 1.25; }
-#ufList { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-height: 0; }
-.uf { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 0.4vw; row-gap: 0.25vh; border-radius: 0.3rem; }
-.uf .sg { font-size: 1.12rem; font-weight: 700; }
-.uf .mg { font-size: 1.05rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.uf .pp { font-size: 0.95rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-.uf .dv { font-size: 0.85rem; font-weight: 600; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#ufList { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.uf { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 0.35vw; row-gap: 0; border-radius: 0.3rem; line-height: 1.15; }
+.uf .sg { font-size: 0.98rem; font-weight: 700; }
+.uf .mg { font-size: 0.95rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.uf .pp { font-size: 0.85rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.uf .dv { font-size: 0.75rem; font-weight: 600; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .uf .b { grid-column: 1 / 3; align-self: center; height: 0.55vh; background: var(--line); border-radius: 1vh; overflow: hidden; }
 .uf .b i { display: block; height: 100%; width: 0; background: var(--fg); }
 .uf.zero .sg { color: var(--dim); }
 .uf.fim .b i { background: #5ccf7a; }
 .uf.ext .b i { background: var(--abst); }
-.uf.sep { margin-top: 0.5vh; }
+.uf.sep { margin-top: 0.35vh; }
 .col { background: var(--panel); border-radius: 0.8rem; padding: 1.3vh 1vw 1vh; display: flex; flex-direction: column; gap: 0.7vh; min-height: 0; overflow: hidden; }
 .col h2 { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1.15; }
 .col h2 small { display: block; font-size: 1rem; font-weight: 400; color: var(--dim); margin-top: 0.2rem; }
@@ -79,6 +79,9 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 .vs::after { content: ""; position: absolute; left: 50%; top: -0.4vh; bottom: -0.4vh; width: 2px; background: var(--fg); }
 .block { display: grid; gap: 0.6vh; }
 .block.sec { gap: 0.3vh; padding-top: 0.6vh; border-top: 1px dashed var(--line); }
+.block.sec .resumo { display: none; }
+html.tela .block.sec .duo, html.tela .block.sec .vs { display: none; }
+html.tela .block.sec .resumo { display: block; }
 .block.sec .v.m { font-size: 1.8rem; }
 .block.sec .delta { font-size: 1.5rem; }
 .block.sec .lbl { font-size: 0.9rem; }
@@ -182,7 +185,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   </header>
 
   <div class="cols">
-    <aside class="col ufs" id="colUF"><div class="ufh">Por UF<small>margem · % apurado<br>▲ quem ganhou vs 1º turno</small></div><div id="ufList"></div></aside>
+    <aside class="col ufs" id="colUF"><div class="ufh">Por UF<small>margem · % apurado · ▲ vs 1º turno</small></div><div id="ufList"></div></aside>
     <!-- ABSTENÇÃO -->
     <section class="col" id="colAb">
       <h2>Abstenção <small>TSE · boletins do exterior e totalização do Brasil</small></h2>
@@ -215,6 +218,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       </div>
       <div class="block sec">
         <div class="blk-t"><span>Só o exterior · antecipado pelos boletins</span><b id="cfExtN">–</b></div>
+        <div class="line resumo" id="cfExtLinha">–</div>
         <div class="duo">
           <div><div class="lbl">Flávio Bolsonaro</div><div class="v m c-flavio" id="cfF">–</div><div class="delta" id="cfFd">–</div><div class="sub" id="cfFv">–</div></div>
           <div class="r"><div class="lbl">Lula</div><div class="v m c-lula" id="cfL">–</div><div class="delta" id="cfLd">–</div><div class="sub" id="cfLv">–</div></div>
@@ -227,7 +231,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         <span><svg viewBox="0 0 40 10"><line x1="0" y1="5" x2="40" y2="5" stroke="#a3aab5" stroke-width="2.5" stroke-dasharray="6 5"/></svg>1º turno, mesmas urnas</span>
         <span class="c-flavio">● Flávio</span><span class="c-lula">● Lula</span>
       </div>
-      <div class="chart" id="chCf"></div>
+      <div class="chart" id="chCf" style="flex-grow:3"></div>
     </section>
 
     <!-- ABSTENÇÃO × VOTO -->
@@ -895,6 +899,25 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       o += '<path clip-path="url(#cpC)" d="' + path(pts, X, Y, "x", "f2") + '" fill="none" stroke="#4f8df5" stroke-width="' + sw + '" stroke-linejoin="round"/>';
       var inv2 = pts.map(function (p) { return { x: p.x, v: 100 - p.f2 }; });
       o += '<path clip-path="url(#cpC)" d="' + path(inv2, X, Y, "x", "v") + '" fill="none" stroke="#f0524f" stroke-width="' + sw + '" stroke-linejoin="round"/>';
+      if (nac) {
+        var ultp = pts[pts.length - 1], nf2 = ultp.f2;
+        var dir = X(ultp.x) > L + (W - L - R) * 0.72, xl = dir ? X(ultp.x) - fs * 0.6 : X(ultp.x) + fs * 0.6, an = dir ? "end" : "start";
+        var yF = Y(nf2), yL = Y(100 - nf2), sep = fs * 1.3;
+        if (Math.abs(yF - yL) < sep) { var mid = (yF + yL) / 2; if (yF <= yL) { yF = mid - sep / 2; yL = mid + sep / 2; } else { yF = mid + sep / 2; yL = mid - sep / 2; } }
+        o += svgTxt(xl, (dir ? yF - fs * 0.5 : yF + fs * 0.35), "Flávio " + f1(nf2, 2) + "%", an, "#4f8df5", fs * 1.1, 700);
+        o += svgTxt(xl, (dir ? yL - fs * 0.5 : yL + fs * 0.35), "Lula " + f1(100 - nf2, 2) + "%", an, "#f0524f", fs * 1.1, 700);
+        if (decisao) {
+          var xd = X(decisao.x), cor = decisao.quem === "Lula" ? "#f0524f" : "#4f8df5";
+          o += '<line x1="' + xd.toFixed(1) + '" x2="' + xd.toFixed(1) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + cor + '" stroke-width="2" stroke-dasharray="6 4"/>';
+          var txt = "MATEMATICAMENTE DEFINIDO: " + decisao.quem.toUpperCase(), sub = "às " + hm(decisao.t) + ", com " + f1(decisao.x, 1) + "% das seções";
+          var fz = Math.min(fs * 2, (W - L - R) / (txt.length * 0.62)), bw = txt.length * fz * 0.62 + fz * 1.6, bx = L + (W - L - R) / 2 - bw / 2, by = T + fs * 0.6;
+          o += '<rect x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (fz * 2.9).toFixed(1) + '" rx="' + (fz * 0.3).toFixed(1) + '" fill="' + cor + '"/>';
+          o += svgTxt(bx + bw / 2, by + fz * 1.25, txt, "middle", "#ffffff", fz, 700) + svgTxt(bx + bw / 2, by + fz * 2.4, sub, "middle", "#ffffff", fz * 0.6);
+        } else if (conta && conta.precisa != null) {
+          var cc = conta.outro === "Lula" ? "#f0524f" : "#4f8df5";
+          o += svgTxt(L + fs * 0.5, T + fs * 1.3, "Para virar, " + conta.outro + " precisa de " + (conta.precisa > 100 ? "mais de 100%" : f1(conta.precisa, 1) + "%") + " do que falta", "start", cc, fs * 1.05, 700);
+        }
+      }
     } else o += msgCarga(W, H, fs);
     c.el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">' + o + '</svg>';
   }
@@ -990,6 +1013,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       if (mudou && col !== "cab") piscar($(col), "pisca-col");
     });
   }
+  var conta = null, K_DEC = "painel2026-decisao", decisao = null;
   var ufVot = {}, uf1 = {}, K_UF1 = "painel2026-uf1t";
   var ORDEM_UF = ["ac","am","ap","pa","ro","rr","to","al","ba","ce","ma","pb","pe","pi","rn","se","df","go","ms","mt","es","mg","rj","sp","pr","rs","sc"];
   var INICIO_REG = { al: 1, df: 1, es: 1, pr: 1 }, ufAnt = {};
@@ -1085,6 +1109,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         return num + txt;
       }
       $("cfFd").innerHTML = delta(pf - pf1, "l", "c-flavio");
+      $("cfExtLinha").innerHTML = '<span class="c-flavio">Flávio ' + pc(pf) + ' (' + sg(pf - pf1) + ')</span> · <span class="c-lula">Lula ' + pc(pl) + ' (' + sg(pl - pl1) + ')</span> <span class="k">vs mesmas urnas no 1º turno</span>';
       $("cfLd").innerHTML = delta(pl - pl1, "r", "c-lula");
     }
     seguro(function () { if (placar && placar.st > 0 && placar.l + placar.f > 0) {
@@ -1140,6 +1165,8 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
     if (defin) t += '<br><b class="' + cls + '">Matematicamente definido:</b> mesmo se todos os eleitores restantes votassem em ' + outro + ', não haveria virada.';
     else if (precisa != null) t += '<br><span class="k">Para virar, ' + outro + ' precisaria de</span> <b>' + (precisa > 100 ? "mais de 100%" : pc(precisa)) + '</b> <span class="k">dos cerca de ' + mil(restV) + ' votos válidos que ainda faltam.</span>';
     el.innerHTML = t;
+    conta = { quem: quem, outro: outro, precisa: precisa, defin: defin, lead: lead };
+    if (defin && !decisao) { decisao = { t: placar.t || Date.now(), x: placar.ts ? 100 * placar.st / placar.ts : 0, quem: quem }; gravar(K_DEC, decisao); }
     chip.hidden = !defin;
     if (defin) { chip.textContent = "Matematicamente definido · " + quem; chip.style.background = lead >= 0 ? "var(--lula)" : "var(--flavio)"; }
   }
@@ -1147,7 +1174,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 
   /* ---------- Início ---------- */
   tipoTela(); window.addEventListener("orientationchange", function () { setTimeout(function () { tipoTela(); render(); }, 300); });
-  ext = ler(K_EXT, {}); abSnaps = ler(K_AB, []); plSnaps = ler(K_PL, []); mun = ler(K_MUN, {});
+  ext = ler(K_EXT, {}); abSnaps = ler(K_AB, []); plSnaps = ler(K_PL, []); mun = ler(K_MUN, {}); decisao = ler(K_DEC, null);
   relogio(); render();
   ler4s().then(render);
   function iniciar() {
