@@ -50,7 +50,8 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 .uf .sg { font-size: 1.12rem; font-weight: 700; }
 .uf .mg { font-size: 1.05rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .uf .pp { font-size: 0.95rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-.uf .b { grid-column: 1 / -1; height: 0.55vh; background: var(--line); border-radius: 1vh; overflow: hidden; }
+.uf .dv { font-size: 0.85rem; font-weight: 600; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.uf .b { grid-column: 1 / 3; align-self: center; height: 0.55vh; background: var(--line); border-radius: 1vh; overflow: hidden; }
 .uf .b i { display: block; height: 100%; width: 0; background: var(--fg); }
 .uf.zero .sg { color: var(--dim); }
 .uf.fim .b i { background: #5ccf7a; }
@@ -116,7 +117,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   .col.ufs { padding: 12px; }
   .ufh { font-size: 0.8rem; }
   #ufList { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px 12px; }
-  .uf .sg { font-size: 0.85rem; } .uf .pp { font-size: 0.75rem; } .uf .mg { font-size: 0.8rem; } .uf .b { height: 5px; } .uf.sep { margin-top: 0; }
+  .uf .sg { font-size: 0.85rem; } .uf .pp { font-size: 0.75rem; } .uf .mg { font-size: 0.8rem; } .uf .dv { font-size: 0.72rem; } .uf .b { height: 5px; } .uf.sep { margin-top: 0; }
   .col { padding: 14px; gap: 10px; border-radius: 10px; overflow: visible; }
   .col h2 { font-size: 1.35rem; flex-wrap: wrap; }
   .col h2 small { font-size: 0.75rem; text-align: left; }
@@ -181,7 +182,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   </header>
 
   <div class="cols">
-    <aside class="col ufs" id="colUF"><div class="ufh">Por UF<small>margem nos válidos · % apurado</small></div><div id="ufList"></div></aside>
+    <aside class="col ufs" id="colUF"><div class="ufh">Por UF<small>margem · % apurado<br>▲ quem ganhou vs 1º turno</small></div><div id="ufList"></div></aside>
     <!-- ABSTENÇÃO -->
     <section class="col" id="colAb">
       <h2>Abstenção <small>TSE · boletins do exterior e totalização do Brasil</small></h2>
@@ -425,6 +426,12 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   }
 
   /* ---------- Totalização do Brasil ---------- */
+  function carregarUF1T() {
+    var c = ler(K_UF1, null);
+    if (c && Object.keys(c).length >= 27) { uf1 = c; return Promise.resolve(); }
+    return Promise.all(UFS.map(function (uf) { return tse(BASE + "6257/dados/" + uf + "/" + uf + "-c0001-e006257-u.json").then(function (u) { uf1[uf] = votosCand(u); }).catch(function () {}); }))
+      .then(function () { if (Object.keys(uf1).length >= 27) gravar(K_UF1, uf1); });
+  }
   function carregar1T() {
     var c = ler(K_REF, null);
     if (c && c.taxa1 && c.final1Ab && c.final1F) { taxa1 = c.taxa1; final1Ab = c.final1Ab; final1F = c.final1F; ref1T = true; return Promise.resolve(); }
@@ -452,8 +459,8 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         if (sts > 0 && stt === sts && !mun[uf + a.cdabr] && filaMun.indexOf(uf + "|" + a.cdabr) < 0) { filaMun.push(uf + "|" + a.cdabr); tmMun[uf + a.cdabr] = tBR(a.dt, a.ht) || Date.now(); }
       });
       aggUF[uf] = t;
-      if (t.st > 0) return tse(BASE + "6258/dados/" + uf + "/" + uf + "-c0001-e006258-u.json").then(function (u) { ufVot[uf] = votosCand(u); }).catch(function () {});
       lerMunicipios();
+      if (t.st > 0) return tse(BASE + "6258/dados/" + uf + "/" + uf + "-c0001-e006258-u.json").then(function (u) { ufVot[uf] = votosCand(u); }).catch(function () {});
     });
   }
   var mun = {}, filaMun = [], lendoMun = false, tmMun = {};
@@ -983,14 +990,14 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       if (mudou && col !== "cab") piscar($(col), "pisca-col");
     });
   }
-  var ufVot = {};
+  var ufVot = {}, uf1 = {}, K_UF1 = "painel2026-uf1t";
   var ORDEM_UF = ["ac","am","ap","pa","ro","rr","to","al","ba","ce","ma","pb","pe","pi","rn","se","df","go","ms","mt","es","mg","rj","sp","pr","rs","sc"];
   var INICIO_REG = { al: 1, df: 1, es: 1, pr: 1 }, ufAnt = {};
   function barraUF() {
     var box = $("ufList"); if (!box) return;
     if (!box.childElementCount) {
       box.innerHTML = ORDEM_UF.concat(["zz"]).map(function (uf) {
-        return '<div class="uf' + (INICIO_REG[uf] || uf === "zz" ? " sep" : "") + (uf === "zz" ? " ext" : "") + '" id="uf_' + uf + '"><span class="sg">' + (uf === "zz" ? "EXT" : uf.toUpperCase()) + '</span><span class="mg" id="ufm_' + uf + '"></span><span class="pp" id="ufp_' + uf + '">–</span><div class="b"><i id="ufb_' + uf + '"></i></div></div>';
+        return '<div class="uf' + (INICIO_REG[uf] || uf === "zz" ? " sep" : "") + (uf === "zz" ? " ext" : "") + '" id="uf_' + uf + '"><span class="sg">' + (uf === "zz" ? "EXT" : uf.toUpperCase()) + '</span><span class="mg" id="ufm_' + uf + '"></span><span class="pp" id="ufp_' + uf + '">–</span><div class="b"><i id="ufb_' + uf + '"></i></div><span class="dv" id="ufd_' + uf + '"></span></div>';
       }).join("");
     }
     ORDEM_UF.concat(["zz"]).forEach(function (uf) {
@@ -1008,6 +1015,24 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         mgEl.style.color = d >= 0 ? "var(--lula)" : "var(--flavio)";
         barEl.style.background = d >= 0 ? "var(--lula)" : "var(--flavio)";
       } else { mgEl.textContent = ""; barEl.style.background = ""; }
+      // variação da margem em relação ao 1º turno: nas mesmas cidades já 100% apuradas quando elas pesam ao menos 15% do apurado; senão, contra o estado inteiro no 1º turno (marcado com ≈)
+      var dvEl = $("ufd_" + uf), dv = null, aprox = false;
+      function mg(l, f) { return l + f > 0 ? 100 * (l - f) / (l + f) : null; }
+      if (uf === "zz") {
+        var L1 = 0, F1 = 0, L2 = 0, F2 = 0; Object.keys(ext).forEach(function (k) { var e = ext[k]; if (e.l1 == null) return; L1 += e.l1; F1 += e.f1; L2 += e.l2; F2 += e.f2; });
+        if (mg(L2, F2) != null && mg(L1, F1) != null) dv = mg(L2, F2) - mg(L1, F1);
+      } else if (v && v.l + v.f > 0 && p > 0) {
+        var cL1 = 0, cF1 = 0, cL2 = 0, cF2 = 0, cA = 0;
+        Object.keys(mun).forEach(function (k) { if (k.slice(0, 2) !== uf) return; var m = mun[k]; cL1 += m.l1 || 0; cF1 += m.f1 || 0; cL2 += m.l2 || 0; cF2 += m.f2 || 0; cA += m.a2 || 0; });
+        var aU = aggUF[uf];
+        if (aU && aU.est > 0 && cA >= 0.15 * aU.est && mg(cL1, cF1) != null && mg(cL2, cF2) != null) dv = mg(cL2, cF2) - mg(cL1, cF1);
+        else if (uf1[uf] && mg(uf1[uf].l, uf1[uf].f) != null) { dv = mg(v.l, v.f) - mg(uf1[uf].l, uf1[uf].f); aprox = true; }
+      }
+      if (dv != null && p > 0) {
+        var adv = Math.abs(dv);
+        dvEl.textContent = (aprox ? "≈" : "") + (dv >= 0 ? "▲L" : "▲F") + (adv >= 10 ? Math.round(adv) : f1(adv, 1));
+        dvEl.style.color = dv >= 0 ? "var(--lula)" : "var(--flavio)";
+      } else dvEl.textContent = "";
       linha.className = "uf" + (INICIO_REG[uf] || uf === "zz" ? " sep" : "") + (uf === "zz" ? " ext" : "") + (p <= 0 ? " zero" : "") + (p >= 99.995 && uf !== "zz" ? " fim" : "");
       if (ufAnt[uf] !== undefined && Math.abs(ufAnt[uf] - p) > 1e-9) piscar(linha, "pisca");
       ufAnt[uf] = p;
@@ -1126,6 +1151,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   relogio(); render();
   ler4s().then(render);
   function iniciar() {
+    carregarUF1T().then(render);
     Promise.all([carregarListaExt(), carregar1T()]).then(function () {
       render();
       return lerExterior().then(render).then(lerBrasil).then(render);
