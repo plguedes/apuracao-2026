@@ -41,7 +41,21 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 .src-st span.ok::before { background: #5ccf7a; }
 .src-st span.err::before { background: var(--lula); }
 
-.cols { display: grid; grid-template-columns: 1.05fr 1fr 1fr 1fr; gap: 0.7vw; min-height: 0; }
+.cols { display: grid; grid-template-columns: 8.4vw 1.05fr 1fr 1fr 1fr; gap: 0.7vw; min-height: 0; }
+.col.ufs { padding: 1.1vh 0.6vw; gap: 0.3vh; }
+.ufh small { display: block; font-size: 0.85rem; text-transform: none; letter-spacing: 0; color: var(--dim); font-weight: 400; margin-top: 0.2vh; }
+.ufh { margin: 0 0 0.4vh; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; line-height: 1.25; }
+#ufList { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-height: 0; }
+.uf { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 0.4vw; row-gap: 0.25vh; border-radius: 0.3rem; }
+.uf .sg { font-size: 1.12rem; font-weight: 700; }
+.uf .mg { font-size: 1.05rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.uf .pp { font-size: 0.95rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.uf .b { grid-column: 1 / -1; height: 0.55vh; background: var(--line); border-radius: 1vh; overflow: hidden; }
+.uf .b i { display: block; height: 100%; width: 0; background: var(--fg); }
+.uf.zero .sg { color: var(--dim); }
+.uf.fim .b i { background: #5ccf7a; }
+.uf.ext .b i { background: var(--abst); }
+.uf.sep { margin-top: 0.5vh; }
 .col { background: var(--panel); border-radius: 0.8rem; padding: 1.3vh 1vw 1vh; display: flex; flex-direction: column; gap: 0.7vh; min-height: 0; overflow: hidden; }
 .col h2 { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1.15; }
 .col h2 small { display: block; font-size: 1rem; font-weight: 400; color: var(--dim); margin-top: 0.2rem; }
@@ -99,6 +113,10 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   .src-st { text-align: left; font-size: 0.8rem; gap: 2px; grid-auto-flow: column; justify-content: start; column-gap: 14px; }
   .src-st span::before { width: 8px; height: 8px; margin-right: 5px; }
   .cols { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .col.ufs { padding: 12px; }
+  .ufh { font-size: 0.8rem; }
+  #ufList { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px 12px; }
+  .uf .sg { font-size: 0.85rem; } .uf .pp { font-size: 0.75rem; } .uf .mg { font-size: 0.8rem; } .uf .b { height: 5px; } .uf.sep { margin-top: 0; }
   .col { padding: 14px; gap: 10px; border-radius: 10px; overflow: visible; }
   .col h2 { font-size: 1.35rem; flex-wrap: wrap; }
   .col h2 small { font-size: 0.75rem; text-align: left; }
@@ -133,6 +151,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
 @media (min-width: 700px) and (max-width: 1100px), (min-width: 700px) and (orientation: portrait) {
   :root { font-size: 16px; }
   .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .col.ufs { grid-column: 1 / -1; }
   .chart { height: 320px; }
   #chAbst { height: 340px; }
   #chAbstD, #chCorr, #chPL { height: 200px; }
@@ -162,6 +181,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   </header>
 
   <div class="cols">
+    <aside class="col ufs" id="colUF"><div class="ufh">Por UF<small>margem nos válidos · % apurado</small></div><div id="ufList"></div></aside>
     <!-- ABSTENÇÃO -->
     <section class="col" id="colAb">
       <h2>Abstenção <small>TSE · boletins do exterior e totalização do Brasil</small></h2>
@@ -179,7 +199,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         <span><svg viewBox="0 0 40 10"><line x1="0" y1="5" x2="40" y2="5" stroke="#6b7380" stroke-width="2" stroke-dasharray="2 4"/></svg>1º turno, final do Brasil</span>
       </div>
       <div class="chart" id="chAbst" style="flex-grow:1.6"></div>
-      <div class="blk-t"><span>Diferença 2º − 1º turno nas mesmas seções, em pontos</span></div>
+      <div class="blk-t"><span id="abDT">Diferença 2º − 1º turno nas mesmas seções, em pontos</span></div>
       <div class="chart" id="chAbstD"></div>
     </section>
 
@@ -283,6 +303,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   function sg(x, d) { if (x == null || isNaN(x)) return "–"; return (x > 0.049 ? "+" : x < -0.049 ? "−" : "") + f1(Math.abs(x), d); }
   function mil(x) { return Math.round(x).toLocaleString("pt-BR"); }
   function hms(t) { var d = new Date(t - 3 * 3600e3); return pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2); }
+  var progExt = { feitos: 0, total: 0 };
   var lidoTse = null, geradoBr = null, dados4s = null, eleTot = 158745502, eleExt = 916534;
   function hm(t) { var d = new Date(t - 3 * 3600e3); return pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2); }
   function tBR(dmy, hms) { var a = (dmy || "").split("/"), b = (hms || "").split(":"); if (a.length < 3 || b.length < 2) return null; return Date.UTC(+a[2], +a[1] - 1, +a[0], +b[0] + 3, +b[1], +(b[2] || 0)); }
@@ -385,9 +406,11 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
     if (lendoExt || !extLista.length) return Promise.resolve();
     lendoExt = true;
     var pend = extLista.filter(function (x) { return !ext[x.join("-")]; }), idx = 0, novos = 0;
+    progExt = { feitos: extLista.length - pend.length, total: extLista.length };
     function trab() {
       if (idx >= pend.length) return Promise.resolve();
       var x = pend[idx++], k = x.join("-");
+      progExt.feitos++; if (progExt.feitos % 50 === 0 && !Object.keys(ext).length) render();
       return boletim(3221, 6258, x[0], x[1], x[2]).then(function (v2) {
         if (!v2) return;
         return boletim(3220, 6257, x[0], x[1], x[2]).then(function (v1) {
@@ -429,6 +452,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
         if (sts > 0 && stt === sts && !mun[uf + a.cdabr] && filaMun.indexOf(uf + "|" + a.cdabr) < 0) { filaMun.push(uf + "|" + a.cdabr); tmMun[uf + a.cdabr] = tBR(a.dt, a.ht) || Date.now(); }
       });
       aggUF[uf] = t;
+      if (t.st > 0) return tse(BASE + "6258/dados/" + uf + "/" + uf + "-c0001-e006258-u.json").then(function (u) { ufVot[uf] = votosCand(u); }).catch(function () {});
       lerMunicipios();
     });
   }
@@ -712,7 +736,18 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   /* ---------- Gráficos ---------- */
   function caixa(id) {
     var el = $(id), w = el.clientWidth, h = el.clientHeight, fs = parseFloat(getComputedStyle(document.documentElement).fontSize) || 14;
+    fs = Math.min(fs, Math.max(9, w / 30));   // em telas estreitas, a letra do gráfico acompanha a largura
     return { el: el, w: Math.max(w, 50), h: Math.max(h, 50), fs: fs };
+  }
+  function tipoTela() {
+    var d = document.documentElement, w = window.innerWidth || 1200, hh = window.innerHeight || 800;
+    var tipo = (w < 700) ? "celular" : (w <= 1100 || hh > w) ? "tablet" : "tela";
+    if (d.classList) { d.classList.remove("celular", "tablet", "tela"); d.classList.add(tipo); }
+    return tipo;
+  }
+  function msgCarga(W, H, fs) {
+    var t = progExt.total ? "Lendo boletins do TSE: " + mil(progExt.feitos) + " de " + mil(progExt.total) : "Lendo boletins do TSE…";
+    return svgTxt(W / 2, H / 2, t, "middle", "#a3aab5", Math.min(fs * 1.2, W / (t.length * 0.62)));
   }
   function eixoTempo(x0, x1) {
     var a = t17();
@@ -780,7 +815,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       o += '<path clip-path="url(#cpA)" d="' + path(s, X, Y, "t", "y2") + '" fill="none" stroke="#f4b740" stroke-width="' + (fs * 0.09).toFixed(1) + '" stroke-linejoin="round"/>';
       var u = s[s.length - 1];
       o += '<circle cx="' + X(u.t).toFixed(1) + '" cy="' + Y(u.y2).toFixed(1) + '" r="' + (fs * 0.3).toFixed(1) + '" fill="#f4b740"/>' + anel("abst", u.t + "|" + u.y2.toFixed(3), X(u.t), Y(u.y2), "#f4b740", fs);
-    } else o += svgTxt(W / 2, H / 2, "Lendo os boletins de urna do TSE…", "middle", "#a3aab5", fs * 1.3);
+    } else o += msgCarga(W, H, fs);
     c.el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">' + o + '</svg>';
   }
 
@@ -788,18 +823,26 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
     var c = caixa("chAbstD"), fs = c.fs * 1.15, L = fs * 3.2, R = fs * 0.6, T = fs * 0.6, B = fs * 2.2, W = c.w, H = c.h;
     var agora = Date.now(), x0 = s.length ? s[0].t : t17() - 3600e3, x1 = Math.max(agora, s.length ? s[s.length - 1].t : agora);
     x1 = Math.max(x1, t19() + 3600e3);
+    var ds = s.map(function (p) { return { t: p.t, d: p.y2 - p.y1, apt: p.apt }; });
+    // Depois que a totalização nacional passa de 1%, este gráfico passa a mostrar só a fase nacional, ampliado
+    var nacional = abSnaps.some(function (a) { return a.t >= t19() - 600e3 && a.ts && a.st / a.ts >= 0.01; });
+    if (nacional) {
+      x0 = t19() - 600e3; x1 = Math.max(agora, ds.length ? ds[ds.length - 1].t : agora) + 300e3;
+      var antes = ds.filter(function (p) { return p.t < x0; });
+      ds = (antes.length ? [{ t: x0, d: antes[antes.length - 1].d, apt: antes[antes.length - 1].apt }] : []).concat(ds.filter(function (p) { return p.t >= x0; }));
+      $("abDT").textContent = "Diferença 2º − 1º turno desde 19h (ampliado), em pontos";
+    } else $("abDT").textContent = "Diferença 2º − 1º turno nas mesmas seções, em pontos";
     var eixo = eixoTempo(x0, x1);
     function X(t) { return L + (W - L - R) * eixo.f(t); }
-    var ds = s.map(function (p) { return { t: p.t, d: p.y2 - p.y1, apt: p.apt }; });
-    var m = 1; ds.forEach(function (p) { if (p.apt >= 20000) m = Math.max(m, Math.abs(p.d)); });
-    m = m > 10 ? Math.ceil(m / 5) * 5 : m > 4 ? Math.ceil(m / 2) * 2 : Math.ceil(m);
+    var m = nacional ? 0.25 : 1; ds.forEach(function (p) { if (p.apt >= 20000) m = Math.max(m, Math.abs(p.d)); });
+    m = nacional ? Math.ceil(m * 1.3 / 0.25) * 0.25 : (m > 10 ? Math.ceil(m / 5) * 5 : m > 4 ? Math.ceil(m / 2) * 2 : Math.ceil(m));
     function Y(v) { return T + (H - T - B) * (m - v) / (2 * m); }
-    var passo = passoPx(2 * m, H - T - B, fs, 1.9);
+    var passo = passoPx(2 * m, H - T - B, fs, 1.9, [0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20]);
     var o = '<defs><clipPath id="cpD"><rect x="' + L + '" y="' + T + '" width="' + (W - L - R) + '" height="' + (H - T - B) + '"/></clipPath></defs>';
     for (var g = Math.ceil(-m / passo) * passo; g <= m + 1e-9; g += passo) o += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '" stroke="' + (Math.abs(g) < 1e-9 ? "#6b7380" : "#2a303a") + '"' + (Math.abs(g) < 1e-9 ? ' stroke-width="2"' : "") + '/>' + svgTxt(L - fs * 0.5, Y(g) + fs * 0.35, (g > 1e-9 ? "+" : g < -1e-9 ? "−" : "") + rot(Math.abs(g)), "end", "#a3aab5", fs);
     ticksTempo(x0, x1, eixo, W, X, fs).forEach(function (tk) { o += svgTxt(tk.px, H - B + fs * 1.4, hm(tk.t), "middle", "#a3aab5", fs); });
     o += faixaProrrog(X, x0, x1, T, H, B, fs, false);
-    o += svgTxt(W - R, T + fs, "acima de zero: abstenção maior que no 1º turno", "end", "#6b7380", fs * 0.9);
+    o += svgTxt(W - R, T + fs, W > 520 ? "acima de zero: abstenção maior que no 1º turno" : "acima de 0: mais abstenção", "end", "#6b7380", fs * 0.9);
     if (ds.length) {
       var y0 = Y(0), area = "M" + X(ds[0].t).toFixed(1) + " " + y0.toFixed(1) + " " + ds.map(function (p) { return "L" + X(p.t).toFixed(1) + " " + Y(p.d).toFixed(1); }).join(" ") + " L" + X(ds[ds.length - 1].t).toFixed(1) + " " + y0.toFixed(1) + " Z";
       o += '<path clip-path="url(#cpD)" d="' + area + '" fill="#f4b740" opacity=".18"/>';
@@ -845,7 +888,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       o += '<path clip-path="url(#cpC)" d="' + path(pts, X, Y, "x", "f2") + '" fill="none" stroke="#4f8df5" stroke-width="' + sw + '" stroke-linejoin="round"/>';
       var inv2 = pts.map(function (p) { return { x: p.x, v: 100 - p.f2 }; });
       o += '<path clip-path="url(#cpC)" d="' + path(inv2, X, Y, "x", "v") + '" fill="none" stroke="#f0524f" stroke-width="' + sw + '" stroke-linejoin="round"/>';
-    } else o += svgTxt(W / 2, H / 2, "Lendo os boletins de urna do TSE…", "middle", "#a3aab5", fs * 1.3);
+    } else o += msgCarga(W, H, fs);
     c.el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">' + o + '</svg>';
   }
 
@@ -940,6 +983,36 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
       if (mudou && col !== "cab") piscar($(col), "pisca-col");
     });
   }
+  var ufVot = {};
+  var ORDEM_UF = ["ac","am","ap","pa","ro","rr","to","al","ba","ce","ma","pb","pe","pi","rn","se","df","go","ms","mt","es","mg","rj","sp","pr","rs","sc"];
+  var INICIO_REG = { al: 1, df: 1, es: 1, pr: 1 }, ufAnt = {};
+  function barraUF() {
+    var box = $("ufList"); if (!box) return;
+    if (!box.childElementCount) {
+      box.innerHTML = ORDEM_UF.concat(["zz"]).map(function (uf) {
+        return '<div class="uf' + (INICIO_REG[uf] || uf === "zz" ? " sep" : "") + (uf === "zz" ? " ext" : "") + '" id="uf_' + uf + '"><span class="sg">' + (uf === "zz" ? "EXT" : uf.toUpperCase()) + '</span><span class="mg" id="ufm_' + uf + '"></span><span class="pp" id="ufp_' + uf + '">–</span><div class="b"><i id="ufb_' + uf + '"></i></div></div>';
+      }).join("");
+    }
+    ORDEM_UF.concat(["zz"]).forEach(function (uf) {
+      var p;
+      if (uf === "zz") { var tot = extLista.length || 1351; p = 100 * Object.keys(ext).length / tot; }
+      else { var a = aggUF[uf]; p = a && a.ts ? 100 * a.st / a.ts : 0; }
+      var linha = $("uf_" + uf);
+      $("ufp_" + uf).textContent = p >= 99.995 ? "100%" : p >= 10 ? Math.floor(p) + "%" : p > 0 ? f1(p, 1) + "%" : "0%";
+      $("ufb_" + uf).style.width = p.toFixed(2) + "%";
+      var v = uf === "zz" ? (function () { var L = 0, F = 0; Object.keys(ext).forEach(function (k) { L += ext[k].l2 || 0; F += ext[k].f2 || 0; }); return { l: L, f: F }; })() : ufVot[uf];
+      var mgEl = $("ufm_" + uf), barEl = $("ufb_" + uf);
+      if (v && v.l + v.f > 0 && p > 0) {
+        var d = 100 * (v.l - v.f) / (v.l + v.f), ad = Math.abs(d);
+        mgEl.textContent = (d >= 0 ? "L+" : "F+") + (ad >= 10 ? Math.round(ad) : f1(ad, 1));
+        mgEl.style.color = d >= 0 ? "var(--lula)" : "var(--flavio)";
+        barEl.style.background = d >= 0 ? "var(--lula)" : "var(--flavio)";
+      } else { mgEl.textContent = ""; barEl.style.background = ""; }
+      linha.className = "uf" + (INICIO_REG[uf] || uf === "zz" ? " sep" : "") + (uf === "zz" ? " ext" : "") + (p <= 0 ? " zero" : "") + (p >= 99.995 && uf !== "zz" ? " fim" : "");
+      if (ufAnt[uf] !== undefined && Math.abs(ufAnt[uf] - p) > 1e-9) piscar(linha, "pisca");
+      ufAnt[uf] = p;
+    });
+  }
   function seguro(fn) { try { fn(); } catch (e) { if (window.console) console.error(e); } }
   function render() {
     var nE = Object.keys(ext).length, tot = extLista.length || 1351, tb = totBr();
@@ -949,6 +1022,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
     $("pgBrSeg").style.width = pBr.toFixed(3) + "%"; $("pgExtSeg").style.width = Math.max(pEx, 0.15).toFixed(3) + "%";
     $("pgTotH").textContent = "Brasil: " + (tb.ts && tb.st ? pc(100 * tb.st / tb.ts, 2) + " das seções" : "a partir das 19h") + (geradoBr && tb.st ? " · TSE às " + hms(geradoBr) : "");
     var faltamU = Math.max(0, tot - nE), faltamE = Math.max(0, eleExt - aptExt);
+    if (lendoExt && progExt.total) $("pgTotH").textContent += " · verificando exterior: " + mil(progExt.feitos) + "/" + mil(progExt.total);
     $("pgExtH").innerHTML = '<span style="color:var(--abst)">Exterior (' + pc(pExTot) + ' do eleitorado):</span> ' + mil(nE) + " de " + mil(tot) + " urnas · faltam " + mil(faltamU) + " (" + mil(faltamE) + " eleitores)" + (ultB ? " · último às " + hm(ultB) : "");
 
     // Abstenção
@@ -1024,6 +1098,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
     }
     seguro(graf4s);
     seguro(graf4sZoom);
+    seguro(barraUF);
     seguro(detectarMudancas);
     seguro(renderInd);
   }
@@ -1046,6 +1121,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   function relogio() { var c19 = $("chip19"); if (c19) c19.hidden = Date.now() > t19() + 1800e3; var d = new Date(Date.now() - 3 * 3600e3); $("clock").textContent = pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2); }
 
   /* ---------- Início ---------- */
+  tipoTela(); window.addEventListener("orientationchange", function () { setTimeout(function () { tipoTela(); render(); }, 300); });
   ext = ler(K_EXT, {}); abSnaps = ler(K_AB, []); plSnaps = ler(K_PL, []); mun = ler(K_MUN, {});
   relogio(); render();
   ler4s().then(render);
@@ -1061,7 +1137,7 @@ header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.0
   setInterval(function () { lerBrasil().then(render); }, 60e3);
   setInterval(function () { lerExterior().then(render); }, 180e3);
   setInterval(function () { ler4s().then(render); }, 30e3);
-  var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(render, 150); });
+  var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { tipoTela(); render(); }, 150); });
 })();
 </script>
 </body>
